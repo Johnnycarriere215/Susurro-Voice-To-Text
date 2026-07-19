@@ -1,0 +1,68 @@
+{
+  "product": "Susurro",
+  "version": "0.1.0",
+  "generatedAt": "2026-07-19T20:41:41.487Z",
+  "note": "url fields are placeholders — fill in after uploading files to hosting.",
+  "artifacts": [
+    {
+      "platform": "macos",
+      "label": "macOS disk image",
+      "filename": "Susurro-0.1.0-mac-x64.dmg",
+      "status": "pending",
+      "bytes": null,
+      "size": null,
+      "sha256": null,
+      "url": ""
+    },
+    {
+      "platform": "macos",
+      "label": "macOS installer package",
+      "filename": "Susurro-0.1.0-mac-x64.pkg",
+      "status": "pending",
+      "bytes": null,
+      "size": null,
+      "sha256": null,
+      "url": ""
+    },
+    {
+      "platform": "windows",
+      "label": "Windows installer (NSIS)",
+      "filename": "Susurro-0.1.0-win-x64.exe",
+      "status": "pending",
+      "bytes": null,
+      "size": null,
+      "sha256": null,
+      "url": ""
+    },
+    {
+      "platform": "windows",
+      "label": "Windows installer (MSI)",
+      "filename": "Susurro-0.1.0-win-x64.msi",
+      "status": "pending",
+      "bytes": null,
+      "size": null,
+      "sha256": null,
+      "url": ""
+    },
+    {
+      "platform": "linux",
+      "label": "Linux AppImage",
+      "filename": "Susurro-0.1.0-linux-x64.AppImage",
+      "status": "pending",
+      "bytes": null,
+      "size": null,
+      "sha256": null,
+      "url": ""
+    },
+    {
+      "platform": "linux",
+      "label": "Debian/Ubuntu package",
+      "filename": "Susurro-0.1.0-linux-x64.deb",
+      "status": "pending",
+      "bytes": null,
+      "size": null,
+      "sha256": null,
+      "url": ""
+    }
+  ]
+}
