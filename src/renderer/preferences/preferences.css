@@ -1,0 +1,43 @@
+.prefs {
+  padding: 26px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 100vh;
+}
+.prefs h1 { margin-bottom: 4px; }
+
+.section { display: flex; flex-direction: column; gap: 10px; }
+.section h2 { font-size: 16px; }
+.section .card { display: flex; flex-direction: column; gap: 12px; }
+
+.hotkey-capture {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  background: var(--deep);
+  color: var(--bg);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: border-color 200ms ease-out;
+}
+.hotkey-capture.capturing {
+  border-color: var(--emphasis);
+  animation: none;
+}
+.hotkey-note { font-size: 12px; color: var(--muted); }
+.hotkey-error { font-size: 12px; color: var(--emphasis); }
+
+.model-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(27, 27, 27, 0.06);
+}
+.model-row:last-child { border-bottom: none; }
+.model-row .meta { flex: 1; }
+.model-row .name { font-weight: 600; }
+.model-row .note { font-size: 12px; color: var(--muted); }
+.model-row .progress-track { width: 120px; }
