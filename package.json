@@ -1,0 +1,25 @@
+{
+  "name": "susurro",
+  "productName": "Susurro",
+  "version": "0.1.0",
+  "description": "Susurro — free, permanently local voice dictation. Speak anywhere; nothing ever leaves your machine.",
+  "author": "Susurro contributors",
+  "license": "MIT",
+  "private": true,
+  "main": "src/main/index.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "node scripts/copy-vue.js",
+    "icons": "node scripts/generate-icons.js",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "release:manifest": "node scripts/generate-release-manifest.js"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^24.13.3",
+    "vue": "^3.5.13"
+  }
+}

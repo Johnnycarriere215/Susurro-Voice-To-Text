@@ -1,0 +1,84 @@
+# Susurro packaging configuration (electron-builder)
+#
+# Signing notes:
+#  - macOS: set CSC_LINK / CSC_KEY_PASSWORD env vars (Developer ID Application cert)
+#    and APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID for notarization.
+#    Entitlements below enable microphone access and disable library validation
+#    so the hardened runtime allows Electron's helpers.
+#  - Windows: set CSC_LINK / CSC_KEY_PASSWORD to an Authenticode PFX. Unsigned
+#    builds work but trigger SmartScreen warnings.
+#  - Linux: no signing required for AppImage/deb.
+
+appId: com.susurro.app
+productName: Susurro
+copyright: "© Susurro contributors — free, local, forever"
+
+directories:
+  output: dist
+  buildResources: build
+
+files:
+  - package.json
+  - src/**/*
+  - "!src/**/__pycache__"
+  - build/icons/**/*
+
+# One consistent, versioned artifact name across every OS/target.
+artifactName: "Susurro-${version}-${os}-${arch}.${ext}"
+
+asarUnpack:
+  # The Python STT server script must exist as a real file on disk so the
+  # bundled/system Python interpreter can execute it.
+  - src/main/stt/whisper_server.py
+
+mac:
+  category: public.app-category.productivity
+  icon: build/icons/icon.png
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    NSMicrophoneUsageDescription: >-
+      Susurro records audio only while you are dictating, transcribes it
+      entirely on this Mac, and never uploads it anywhere.
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+    - target: pkg
+      arch: [x64, arm64]
+
+dmg:
+  title: "Susurro ${version}"
+
+win:
+  icon: build/icons/icon.png
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: msi
+      arch: [x64]
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+
+linux:
+  icon: build/icons/icon.png
+  category: Utility
+  synopsis: Free, permanently local voice dictation
+  description: >-
+    Press a hotkey or tap the floating widget, speak, and your words are typed
+    into whatever app has focus. Recording, transcription and optional cleanup
+    all run locally. No account, no cloud, no telemetry.
+  target:
+    - target: AppImage
+      arch: [x64]
+    - target: deb
+      arch: [x64]
+
+deb:
+  # xdotool/ydotool are optional runtime helpers, not hard dependencies.
+  recommends:
+    - xdotool
