@@ -1,0 +1,34 @@
+/* Frameless, transparent always-on-top pill. Deep-contrast shell per brand. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pill {
+  width: 140px;
+  height: 40px;
+  margin: 4px;
+  border-radius: 999px;
+  background: #14120f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(20, 18, 15, 0.35);
+  transition: box-shadow 200ms ease-out, transform 150ms ease-out;
+}
+.pill:hover { box-shadow: 0 6px 22px rgba(20, 18, 15, 0.5); }
+.pill:active { transform: scale(0.985); }
+
+canvas { display: block; }
+
+/* idle dot pulses very softly; recording shows the live waveform */
+.hint-dot {
+  position: absolute;
+  pointer-events: none;
+}
