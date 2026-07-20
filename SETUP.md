@@ -20,16 +20,43 @@ only Python package needed:
 
 ```sh
 pip install faster-whisper
-# or, isolated:
-python3 -m pip install --user faster-whisper
 ```
 
-If your Python lives somewhere unusual, set `"pythonPath"` in Susurro's
-`settings.json` (see “Where Susurro stores data” below).
+### If pip refuses with "externally-managed-environment" (PEP 668)
+
+Recent Debian/Ubuntu/Fedora ship a system Python that blocks system-wide
+`pip install`. Use a virtual environment — the recommended approach anyway:
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install faster-whisper
+```
+
+Susurro runs whichever `python3` is first on your `PATH`, so **either**:
+
+- keep the venv **activated in the same shell** you launch `npm start` from
+  (its `python3` shadows the system one), **or**
+- point Susurro straight at the venv interpreter once, so activation is never
+  needed: set `"pythonPath"` in `settings.json` to the venv's python, e.g.
+  `"pythonPath": "/absolute/path/to/Susurro-Voice-To-Text/.venv/bin/python"`
+  (`…\.venv\Scripts\python.exe` on Windows). See “Where Susurro stores data”
+  below for the file location. This is the most reliable option if you launch
+  Susurro from a desktop shortcut rather than a terminal.
+
+As a last resort you can install into the system Python with
+`pip install --break-system-packages faster-whisper`, but a venv is cleaner
+and won't risk your OS packages.
 
 ## Run from source
 
+Run every command **inside the cloned project directory** — not your home
+folder:
+
 ```sh
+git clone https://github.com/Johnnycarriere215/Susurro-Voice-To-Text.git
+cd Susurro-Voice-To-Text
+
 npm install        # also copies the Vue runtime into the renderer (postinstall)
 npm run icons      # generate build/icons (committed, only needed after edits)
 npm start
