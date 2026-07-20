@@ -7,12 +7,18 @@ name: Release
 #
 # Trigger with either:
 #   git tag v0.1.0 && git push origin v0.1.0
-# or the "Run workflow" button (Actions tab) for a dry run without a tag.
+# or the "Run workflow" button (Actions tab / API), supplying the tag to
+# publish — useful when tag pushes aren't available (e.g. a CI environment
+# whose git remote is scoped to a single branch).
 on:
   push:
     tags:
       - "v*.*.*"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (e.g. v0.1.0) — created if it doesn't exist yet"
+        required: true
 
 jobs:
   build:
@@ -87,6 +93,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           generate_release_notes: true
           files: |
             dist/*
