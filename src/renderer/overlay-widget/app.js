@@ -141,8 +141,12 @@ createApp({
 
     async function onPointerDown(e) {
       if (e.button !== 0) return;
+      // Capture the pointer so a fast drag that briefly outruns the widget
+      // still delivers move/up events to us instead of being dropped.
+      try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* unsupported */ }
       const pos = await window.susurro.invoke(CH.OVERLAY_GET_POSITION);
       dragging = {
+        pointerId: e.pointerId,
         startScreenX: e.screenX,
         startScreenY: e.screenY,
         winX: pos.x,

@@ -18,15 +18,30 @@ const RESERVED = [
 
 let current = null;
 
+// Canonical spelling for every accelerator token we recognize, so the
+// displayed hotkey is always clean regardless of the input's casing.
+const MODIFIER_ALIASES = {
+  cmd: 'Command', command: 'Command',
+  ctrl: 'Control', control: 'Control',
+  cmdorctrl: 'CommandOrControl', commandorcontrol: 'CommandOrControl',
+  alt: 'Alt', option: 'Option',
+  shift: 'Shift',
+  super: 'Super', meta: 'Super',
+  altgr: 'AltGr',
+  space: 'Space',
+};
+
 function normalize(accel) {
   return String(accel || '')
     .split('+')
     .map((part) => {
-      const p = part.trim().toLowerCase();
-      if (p === 'cmd' || p === 'command') return 'Command';
-      if (p === 'ctrl' || p === 'control') return 'Control';
-      if (p === 'cmdorctrl' || p === 'commandorcontrol') return 'CommandOrControl';
-      return part.trim();
+      const trimmed = part.trim();
+      const alias = MODIFIER_ALIASES[trimmed.toLowerCase()];
+      if (alias) return alias;
+      // Single character keys canonicalize to uppercase (a -> A); leave named
+      // keys (F5, Escape, PageDown, …) exactly as supplied.
+      if (trimmed.length === 1) return trimmed.toUpperCase();
+      return trimmed;
     })
     .join('+');
 }

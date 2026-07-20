@@ -505,10 +505,13 @@ app.on('window-all-closed', () => {
 });
 
 app.whenReady().then(() => {
-  // Microphone is the only permission any renderer may request.
+  // Microphone is the only permission any renderer may request. Both the
+  // request handler (interactive getUserMedia) and the check handler (silent
+  // re-checks Chromium performs on subsequent captures) allow media only.
   session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) => {
     cb(permission === 'media');
   });
+  session.defaultSession.setPermissionCheckHandler((_wc, permission) => permission === 'media');
 
   registerIpc();
   createTray();

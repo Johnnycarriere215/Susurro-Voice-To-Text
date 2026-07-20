@@ -102,7 +102,12 @@ function downloadFile(url, dest, state, onBytes) {
           request.abort();
           return fail(new Error('cancelled'));
         }
-        out.write(chunk);
+        // Honor write backpressure so a multi-hundred-MB model.bin doesn't
+        // accumulate unbounded in memory faster than the disk drains it.
+        if (out.write(chunk) === false && typeof response.pause === 'function') {
+          response.pause();
+          out.once('drain', () => response.resume());
+        }
         onBytes(chunk.length);
       });
       response.on('end', () => {
