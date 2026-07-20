@@ -95,6 +95,26 @@ out-of-tree file is flagged here.
 - Icons are generated programmatically (`scripts/generate-icons.js`, raw
   PNG encoder, no dependencies) and committed; electron-builder converts
   the 512 px PNG to `.icns`/`.ico` at package time.
+- **Fixes found by actually running the release workflow** (run #1, all three
+  platforms failed on first attempt — logs pulled via the GitHub API):
+  - `publish: null` added to `electron-builder.yml`. Without it,
+    electron-builder auto-detects the GitHub remote under `CI=true` and
+    tries to check for a draft release to publish to, which fails any build
+    job lacking `GH_TOKEN` (build jobs intentionally don't have one —
+    publishing is the separate `publish` job's responsibility, via
+    `softprops/action-gh-release`, not electron-builder's own publish path).
+  - `mac.target[*].arch` changed from `[x64, arm64]` to `[universal]`.
+    Building both archs for the `pkg` target concurrently raced on a shared
+    intermediate filename inside electron-builder and reliably failed
+    (`ENOENT` on cleanup). A universal binary avoids the race and ships one
+    download that runs natively on both Intel and Apple Silicon instead of
+    two separate ones — `@electron/universal` is already a transitive dep of
+    electron-builder, so this needed no new dependency.
+  - `linux.maintainer` set explicitly (placeholder `noreply@susurro.dev`).
+    The `.deb` target refuses to build without a maintainer email, and
+    `package.json`'s `author` field is a plain string with none. Replace
+    with a real support address if you want it discoverable via
+    `dpkg -s susurro`.
 
 ## Behavior clarifications
 - "Start/Stop Listening" in the tray, the global hotkey, the overlay click,

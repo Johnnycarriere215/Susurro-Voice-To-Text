@@ -13,6 +13,13 @@ appId: com.susurro.app
 productName: Susurro
 copyright: "© Susurro contributors — free, local, forever"
 
+# Publishing is handled entirely by the separate GitHub Actions "publish" job
+# (softprops/action-gh-release), not by electron-builder itself. Without this,
+# electron-builder auto-detects a GitHub remote under CI and tries to check
+# for a draft release to publish to, which fails any build job that has no
+# GH_TOKEN — exactly the case here, since build jobs only build.
+publish: null
+
 directories:
   output: dist
   buildResources: build
@@ -42,11 +49,16 @@ mac:
     NSMicrophoneUsageDescription: >-
       Susurro records audio only while you are dictating, transcribes it
       entirely on this Mac, and never uploads it anywhere.
+  # universal (not [x64, arm64]): building both archs for the `pkg` target
+  # concurrently races on a shared intermediate filename inside
+  # electron-builder and reliably fails (ENOENT on cleanup). A universal
+  # binary sidesteps the race and, as a bonus, is one download that runs
+  # natively on both Intel and Apple Silicon instead of two separate ones.
   target:
     - target: dmg
-      arch: [x64, arm64]
+      arch: [universal]
     - target: pkg
-      arch: [x64, arm64]
+      arch: [universal]
 
 dmg:
   title: "Susurro ${version}"
@@ -67,6 +79,11 @@ nsis:
 linux:
   icon: build/icons/icon.png
   category: Utility
+  # Required by the .deb target's maintainer field (package.json's "author"
+  # is a plain string with no email, which electron-builder otherwise wants).
+  # Placeholder — point at a real support address if you want it discoverable
+  # via `dpkg -s susurro`.
+  maintainer: "Susurro <noreply@susurro.dev>"
   synopsis: Free, permanently local voice dictation
   description: >-
     Press a hotkey or tap the floating widget, speak, and your words are typed

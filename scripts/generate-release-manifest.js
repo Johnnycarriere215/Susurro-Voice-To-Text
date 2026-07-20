@@ -45,10 +45,12 @@ const built = fs.existsSync(distDir)
 const artifacts = EXPECTED.map((expected) => {
   const match = built.find((f) => f.endsWith(expected.ext));
   if (!match) {
+    const archGuess = expected.platform === 'macos' ? 'universal' : 'x64';
+    const osGuess = expected.platform === 'macos' ? 'mac' : expected.platform === 'windows' ? 'win' : 'linux';
     return {
       platform: expected.platform,
       label: expected.label,
-      filename: `Susurro-${pkg.version}-${expected.platform === 'macos' ? 'mac' : expected.platform === 'windows' ? 'win' : 'linux'}-x64${expected.ext}`,
+      filename: `Susurro-${pkg.version}-${osGuess}-${archGuess}${expected.ext}`,
       status: 'pending',
       bytes: null,
       size: null,
