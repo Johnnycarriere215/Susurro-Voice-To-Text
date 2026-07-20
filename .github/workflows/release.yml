@@ -1,0 +1,94 @@
+name: Release
+
+# Builds Susurro's installers on real macOS, Windows, and Linux runners —
+# needed because dmg/pkg, msi, and AppImage/deb each require their native
+# OS's packaging tools — then publishes them as a GitHub Release together
+# with the generated releases/releases.json and RELEASES.md.
+#
+# Trigger with either:
+#   git tag v0.1.0 && git push origin v0.1.0
+# or the "Run workflow" button (Actions tab) for a dry run without a tag.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            script: dist:mac
+            artifact: macos
+          - os: windows-latest
+            script: dist:win
+            artifact: windows
+          - os: ubuntu-latest
+            script: dist:linux
+            artifact: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - run: npm run ${{ matrix.script }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: susurro-${{ matrix.artifact }}
+          path: |
+            dist/*.dmg
+            dist/*.pkg
+            dist/*.exe
+            dist/*.msi
+            dist/*.AppImage
+            dist/*.deb
+          if-no-files-found: ignore
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # --ignore-scripts: this job only needs Node to run the manifest
+      # script, not the Electron binary or the Vue-vendoring postinstall.
+      - run: npm ci --ignore-scripts
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Collect installers into dist/
+        run: |
+          mkdir -p dist
+          find artifacts -type f \( \
+            -name '*.dmg' -o -name '*.pkg' -o -name '*.exe' -o \
+            -name '*.msi' -o -name '*.AppImage' -o -name '*.deb' \
+          \) -exec cp {} dist/ \;
+          ls -la dist
+
+      - run: npm run release:manifest
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            dist/*
+            releases/releases.json
+            releases/RELEASES.md

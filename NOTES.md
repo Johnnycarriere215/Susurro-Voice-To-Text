@@ -77,6 +77,21 @@ out-of-tree file is flagged here.
   the Electron runtime binary — so **all six artifacts are `pending`** until
   `npm run dist:*` is run on real macOS/Windows/Linux machines, followed by
   `npm run release:manifest`.
+- **`.github/workflows/release.yml`** (added after the initial build, not in
+  the original file structure) automates exactly that: a 3-OS build matrix
+  (macos-latest/windows-latest/ubuntu-latest) each running its
+  `npm run dist:*` script, followed by a publish job that collects every
+  artifact, runs `release:manifest`, and creates a GitHub Release with the
+  installers plus `releases.json`/`RELEASES.md` attached. Triggered by
+  pushing a `v*.*.*` tag, or manually via workflow_dispatch. Flagged here per
+  the spec's "stop and flag before adding files outside `susurro/`" rule —
+  `.github/` is repo tooling, not part of the app itself, and is the only
+  way to actually produce all three installers since this sandbox's egress
+  policy blocks the Electron binary download needed to build even one.
+  No code-signing secrets are configured, so the mac/Windows builds this
+  workflow produces are unsigned (matches the "signing is optional for local
+  use" note already in `electron-builder.yml`/`SETUP.md`); add
+  `CSC_LINK`/`CSC_KEY_PASSWORD` etc. as repo secrets to sign real releases.
 - Icons are generated programmatically (`scripts/generate-icons.js`, raw
   PNG encoder, no dependencies) and committed; electron-builder converts
   the 512 px PNG to `.icns`/`.ico` at package time.
